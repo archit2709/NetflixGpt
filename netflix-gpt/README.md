@@ -20,3 +20,5 @@ browser page (after authenticator)
 Netflix Gpt
 --search bar
 --movie suggestion
+
+# https://netflix-gpt-30491.web.app
