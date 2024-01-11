@@ -3,19 +3,20 @@ import Header from "./Header";
 import { useDispatch } from "react-redux";
 import { useState, useRef } from "react";
 import { checkValidateData } from "../utils/validate";
+import { PHOTO_URL } from "../utils/constants";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
 import { auth } from "../utils/firebase";
-import { useNavigate } from "react-router-dom";
-import { addUser, removeUser } from "../utils/userSlice";
+
+import { addUser } from "../utils/userSlice";
 
 const Login = () => {
   const [isSignInForm, setIsSignInForm] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
-  const navigate = useNavigate();
+
   const email = useRef(null);
   const dispatch = useDispatch();
   const password = useRef(null);
@@ -42,10 +43,9 @@ const Login = () => {
         .then((userCredential) => {
           // Signed up
           const user = userCredential.user;
-          console.log("login.js");
           updateProfile(user, {
             displayName: name.current.value,
-            photoURL: "https://avatars.githubusercontent.com/u/12824231?v=4",
+            photoURL: PHOTO_URL,
           })
             .then(() => {
               // Profile updated!
@@ -58,7 +58,7 @@ const Login = () => {
                   photoURL: photoURL,
                 })
               );
-              navigate("/browse");
+
               // ...
             })
             .catch((error) => {
@@ -86,7 +86,29 @@ const Login = () => {
         .then((userCredential) => {
           // Signed in
           const user = userCredential.user;
-          navigate("/browse");
+          updateProfile(user, {
+            displayName: name.current.value,
+            photoURL: PHOTO_URL,
+          })
+            .then(() => {
+              // Profile updated!
+              const { displayName, email, uid, photoURL } = auth.currentUser;
+              dispatch(
+                addUser({
+                  uid: uid,
+                  displayName: displayName,
+                  email: email,
+                  photoURL: photoURL,
+                })
+              );
+
+              // ...
+            })
+            .catch((error) => {
+              // An error occurred
+              setErrorMessage(error.message);
+              // ...
+            });
           // ...
         })
         .catch((error) => {
